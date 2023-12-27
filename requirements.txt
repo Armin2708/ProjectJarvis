@@ -1,0 +1,7 @@
+openai
+pytesseract
+pyautogui
+pynput
+discord
+requests
+flask
