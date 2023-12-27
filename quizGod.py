@@ -2,13 +2,14 @@ import pyautogui
 import pytesseract
 import requests
 import openai
-from pynput import keyboard
+from pynput.keyboard import Key, Listener
 import asyncio
 
 pytesseract.pytesseract.tesseract_cmd = r"/opt/homebrew/Cellar/tesseract/5.3.3/bin/tesseract"
 
 top_left = None
 bottom_right = None
+
 answer = None
 channelId = 1186852607113834616
 apiKey = "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"
@@ -18,6 +19,11 @@ prompt = {"role": "system",
                      "the better choice corresponding to the most likely answer. If you are not given choices, "
                      "still answer with what you think is the right answer"
           }
+keys = {
+    "executeKey": Key.ctrl_l,
+    "topLeftKey": Key.shift_l,
+    "bottomRightKey": Key.shift_r
+}  # This dictionary can map string keys to 'Key' enumeration
 
 
 def chatGPT_answer(question):
@@ -33,9 +39,11 @@ def chatGPT_answer(question):
     return answer
 
 
-async def kahoot_god():
+async def quiz_god():
+    print("hello")
     global top_left, bottom_right, answer
     screen_width, screen_height = pyautogui.size()
+    print("here")
 
     print(f"Width: {screen_width}, Height: {screen_height}")
 
@@ -61,23 +69,23 @@ async def kahoot_god():
 
 
 def on_press(key):
-    global top_left, bottom_right
+    global top_left, bottom_right, keys  # global var is changed
     try:
-        # Check if the combination of keys "control", "command", and "t" is pressed
-        if all([key == getattr(keyboard.Key, k) for k in ['cmd']]):
-            print("cmd pressed")
-            asyncio.run(kahoot_god())
+        if key == keys["executeKey"]:  # Access key via string in dictionary
+            print("execute pressed")
+            asyncio.run(quiz_god())
+            print("ran")
 
-        elif key == keyboard.Key.shift_l:
+        elif key == keys["topLeftKey"]:  # Access key via string in dictionary
             top_left = pyautogui.position()  # save position of mouse
             print(f'Top left position recorded: {top_left}')
 
-        elif key == keyboard.Key.shift_r:
+        elif key == keys["bottomRightKey"]:  # Access key via string in dictionary
             bottom_right = pyautogui.position()  # save position of mouse
             print(f'Bottom right position recorded: {bottom_right}')
-    except AttributeError:
-        pass  # Ignore if the pressed key is not an attribute of Key
+    except Exception as e:
+        print(f"Exception occurred: {e}")
 
 
-with keyboard.Listener(on_press=on_press) as listener:
+with Listener(on_press=on_press) as listener:
     listener.join()
