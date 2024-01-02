@@ -43,10 +43,8 @@ def chatGPT_answer(question):
 
 
 async def quiz_god():
-    print("hello")
     global top_left, bottom_right, answer
     screen_width, screen_height = pyautogui.size()
-    print("here")
 
     print(f"Width: {screen_width}, Height: {screen_height}")
 
