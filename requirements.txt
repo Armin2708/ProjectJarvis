@@ -1,7 +1,7 @@
-openai
-pytesseract
-pyautogui
-pynput
-discord
-requests
-flask
+openai~=1.5.0
+pytesseract~=0.3.10
+pyautogui~=0.9.54
+pynput~=1.7.6
+discord~=2.3.2
+requests~=2.31.0
+flask~=3.0.0

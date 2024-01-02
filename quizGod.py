@@ -1,11 +1,11 @@
 import pyautogui
 import pytesseract
 import requests
-import openai
+from openai import OpenAI
 from pynput.keyboard import Key, Listener
 import asyncio
 
-pytesseract.pytesseract.tesseract_cmd = r"/opt/homebrew/Cellar/tesseract/5.3.3/bin/tesseract"
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 top_left = None
 bottom_right = None
@@ -26,10 +26,13 @@ keys = {
 }  # This dictionary can map string keys to 'Key' enumeration
 
 
+client = OpenAI(api_key=apiKey)
+
+
 def chatGPT_answer(question):
     global answer
-    openai.api_key = apiKey
-    completion = openai.Completion.create(
+
+    completion = client.chat.completions.create(
         model="gpt-4",
         messages=[
             prompt,
@@ -74,7 +77,6 @@ def on_press(key):
         if key == keys["executeKey"]:  # Access key via string in dictionary
             print("execute pressed")
             asyncio.run(quiz_god())
-            print("ran")
 
         elif key == keys["topLeftKey"]:  # Access key via string in dictionary
             top_left = pyautogui.position()  # save position of mouse

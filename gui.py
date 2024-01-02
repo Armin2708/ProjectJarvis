@@ -1,64 +1,134 @@
+import json
 import tkinter as tk
-import traceback
-import sys
-from tkinter import ttk
-import subprocess
+from tkinter import filedialog, messagebox
+
+root = tk.Tk()
+root.title("QuizGod Gui")
+root.geometry("300x250")
 
 
-class Application(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.geometry("300x200")
-        self.title("Application")
-        # Variables
-        self.discord_token_var = tk.StringVar()
-        self.channel_id_var = tk.StringVar()
-        self.gpt_api_key_var = tk.StringVar()
-        self.quiz_god_input_var = tk.StringVar()
-        # Widgets
-        self.button_keyboard = ttk.Button(self, text="Button", command=self.self_destruct)
-        self.button_keyboard.pack()
-        self.entry_discord_token = ttk.Entry(self, show="*", textvariable=self.discord_token_var)
-        self.entry_discord_token.pack()
-        self.entry_channel_id = ttk.Entry(self, textvariable=self.channel_id_var)
-        self.entry_channel_id.pack()
-        self.entry_gpt_api_key = ttk.Entry(self, show="*", textvariable=self.gpt_api_key_var)
-        self.entry_gpt_api_key.pack()
-        ttk.Label(self, text="quiz_god Keybind:").pack()
-        self.entry_quiz_god_input = ttk.Entry(self, textvariable=self.quiz_god_input_var)
-        self.entry_quiz_god_input.pack()
+def save_data():
+    data = {
+        'TesseractPath': TesseractPath,
+        'OpenAiApiKey': OpenAiApiKey,
+        'DiscordBotToken': DiscordBotToken,
+        'DiscordChannel': DiscordChannel,
+        'topLeftPosKey': topLeftPosKey,
+        'botRightPosKey': botRightPosKey,
+        'quizGodRunKey': quizGodRunKey,
+        'autoDestructKey': autoDestructKey
+    }
 
-        try:
-            self.discord_bot_process = subprocess.Popen([sys.executable, "discordBot.py"])
-        except Exception as e:
-            print("Failed to start discordBot.py", str(e))
-            print(traceback.format_exc())
-
-        try:
-            self.quiz_god_process = subprocess.Popen([sys.executable, "quizGod.py"])
-        except Exception as e:
-            print("Failed to start quizGod.py", str(e))
-            print(traceback.format_exc())
-
-    def on_press(self, event=None):
-        self.unbind(event.char)
-        self.bind(self.quiz_god_input_var.get(), self.on_press)
-
-    def self_destruct(self):
-        if self.discord_bot_process.poll() is None:
-            self.discord_bot_process.terminate()
-
-        if self.quiz_god_process.poll() is None:
-            self.quiz_god_process.terminate()
-
-        self.destroy()
+    with open('data.json', 'w') as f:
+        json.dump(data, f)
 
 
-def main():
-    app = Application()
-    app.protocol("WM_DELETE_WINDOW", app.self_destruct)
-    app.mainloop()
+def load_data():
+    try:
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+            return data
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
 
 
-if __name__ == "__main__":
-    main()
+data = load_data()
+TesseractPath = data.get('TesseractPath', [])
+OpenAiApiKey = data.get('OpenAiApiKey', [])
+DiscordBotToken = data.get('DiscordBotToken', [])
+DiscordChannel = data.get('DiscordChannel', [])
+
+topLeftPosKey = data.get('topLeftPosKey', [])
+botRightPosKey = data.get('botRightPosKey', [])
+quizGodRunKey = data.get('quizGodRunKey', [])
+autoDestructKey = data.get('autoDestructKey', [])
+
+
+def load_data():
+    try:
+        with open('data.json', 'r') as f:
+            data = json.load(f)
+            return data
+    except (FileNotFoundError, json.JSONDecodeError):
+        return {}
+
+
+def print_values():
+    print("TesseractPath:", TesseractPath)
+    print("OpenAiApiKey:", OpenAiApiKey)
+    print("DiscordBotToken:", DiscordBotToken)
+    print("DiscordChannel:", DiscordChannel)
+    print("topLeftPosKey:", topLeftPosKey)
+    print("botRightPosKey:", botRightPosKey)
+    print("quizGodRunKey:", quizGodRunKey)
+    print("autoDestructKey:", autoDestructKey)
+
+
+def open_input_dialog(variable):
+
+    def validate():
+        txt = entry.get()
+        variable.append(txt)
+        messagebox.showinfo("String info", f"String saved: {txt}")
+        top.destroy()
+
+    top = tk.Toplevel(root)
+    top.title("Enter your string")
+    entry = tk.Entry(top)
+    entry.pack()
+
+    submit_button = tk.Button(top, text="Validate", command=validate)
+    submit_button.pack()
+
+
+def open_path_dialog():
+    global TesseractPath
+    filepath = filedialog.askopenfilename()
+    TesseractPath.append(filepath)
+    messagebox.showinfo("Path Info", f"Path saved: {filepath}")
+
+
+def open_key_dialog(variable):
+
+    def validate():
+        keys = entry.get()
+        variable.append(keys.split(","))
+        messagebox.showinfo("Key Combination", f"Key Combination saved: {keys}")
+        top.destroy()
+
+    top = tk.Toplevel(root)
+    top.title("Enter Key Combination")
+    label = tk.Label(top, text="Enter keys separated by comma")
+    label.pack()
+    entry = tk.Entry(top)
+    entry.pack()
+
+    submit_button = tk.Button(top, text="Validate", command=validate)
+    submit_button.pack()
+
+
+func_button = tk.Button(root, text=f"Select Tesseract path", command=open_path_dialog)
+func_button.pack()
+
+key_button = tk.Button(root, text=f"Enter Api Key", command=lambda: open_input_dialog(OpenAiApiKey))
+key_button.pack()
+key_button = tk.Button(root, text=f"Enter DiscordBot Token", command=lambda: open_input_dialog(DiscordBotToken))
+key_button.pack()
+key_button = tk.Button(root, text=f"Enter Discord Channel", command=lambda: open_input_dialog(DiscordChannel))
+key_button.pack()
+
+func_button = tk.Button(root, text=f"Set Top left pos Key", command=lambda: open_key_dialog(topLeftPosKey))
+func_button.pack()
+func_button = tk.Button(root, text=f"Set Bot right pos Key", command=lambda: open_key_dialog(botRightPosKey))
+func_button.pack()
+func_button = tk.Button(root, text=f"Set Run Key", command=lambda: open_key_dialog(quizGodRunKey))
+func_button.pack()
+func_button = tk.Button(root, text=f"Set self Destruct Key", command=lambda: open_key_dialog(autoDestructKey))
+func_button.pack()
+
+print_button = tk.Button(root, text="Print values", command=print_values)
+print_button.pack()
+
+root.protocol("WM_DELETE_WINDOW", save_data)
+
+root.mainloop()
