@@ -1,8 +1,7 @@
 import asyncio
 import threading
-
 import discord
-from discord import Intents, channel
+from discord import Intents
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)

@@ -17,7 +17,7 @@ prompt = {"role": "system",
           "content": "You are a helpful assistant specialized in answering multiple-choice "
                      "questions who responds with 'My Answer :' always before an answer and with "
                      "the better choice corresponding to the most likely answer. If you are not given choices, "
-                     "still answer with what you think is the right answer"
+                     "still answer with what you think is the right answer, if it looks like a math problem without a question, just solve it the way it is presented"
           }
 keys = {
     "executeKey": Key.ctrl_l,
